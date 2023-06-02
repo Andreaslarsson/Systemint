@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "UrlRedirectService.Protos";
+
+message UrlRequest {
+    string nanoid = 1;
+}
+
+message UrlResponse {
+    int32 id = 1;
+    string nanoid = 2;
+    string url = 3;
+}
+
+service GetUrlService {
+    rpc GetUrl(UrlRequest) returns (UrlResponse);
+}

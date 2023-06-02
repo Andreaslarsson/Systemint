@@ -1,0 +1,62 @@
+version: '3.9'
+
+services:
+  # DbServices
+  shorturldb:
+    image: mcr.microsoft.com/azure-sql-edge
+    container_name: shorturldb
+    restart: always
+    ports:
+      - 1433:1433
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: ECUtbildning2022!
+    volumes:
+      - ./volumes/shortURL:/var/opt/mssql/data
+
+  userdb:
+    image: mcr.microsoft.com/azure-sql-edge
+    container_name: userdb
+    restart: always
+    ports:
+      - 1434:1433
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: ECUtbildning2022!
+    volumes:
+      - ./volumes/userDB:/var/opt/mssql/data
+
+  # Services
+  urlshortenerapi:
+    image: urlshortenerapi
+    container_name: urlshortenerapi
+    restart: always
+    environment:
+      ASPNETCORE_URLS: http://+:5227
+    ports:
+      - 5227:5227
+      - 52027:52027
+    depends_on:
+      - shorturldb
+
+  urlredirectservice:
+    image: urlredirectservice
+    container_name: urlredirectservice
+    restart: always
+    environment:
+      ASPNETCORE_URLS: http://+:5228
+    ports:
+      - 5228:5228
+      - 52028:52028
+
+  loginservice:
+    image: loginservice
+    container_name: loginservice
+    restart: always
+    environment:
+      ASPNETCORE_URLS: http://+:5229
+    ports:
+      - 5229:5229
+      - 52029:52029
+    depends_on:
+      - userdb
